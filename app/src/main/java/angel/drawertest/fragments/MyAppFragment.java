@@ -32,6 +32,9 @@ public abstract class MyAppFragment extends Fragment {
         return (MainActivity) getActivity();
     }
 
+    /**
+     * this will indicate the navigation that the stack will be cleared before inserting a new fragment transaction
+     */
     protected boolean isRootSection = false;
 
     public boolean getIsRootSection() {

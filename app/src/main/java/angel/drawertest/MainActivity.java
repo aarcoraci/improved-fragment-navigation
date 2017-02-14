@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity
             should exist the app
          */
         navigateToSection(AppSection.INBOX, false);
+        navigationView.setCheckedItem(R.id.nav_inbox);
     }
 
     @Override
@@ -120,7 +121,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_trash) {
             navigateToSection(AppSection.TRASH, true);
         } else if (id == R.id.nav_inbox) {
-            navigateToSection(AppSection.INBOX, false);
+            navigateToSection(AppSection.INBOX, false); // the boolean here will not do anything
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -143,6 +144,7 @@ public class MainActivity extends AppCompatActivity
         if (fragment.getIsRootSection())
             getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
+        // normal transaction stuff
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.main_content, fragment, fragment.getFragmentTag());
         if (addToStack)
