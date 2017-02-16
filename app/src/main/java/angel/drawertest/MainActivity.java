@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private NavigationView navigationView;
 
+    private static String INSTANCE_TOOLBAR_USE_DRAWER = "toolbar_drawer";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,13 +71,42 @@ public class MainActivity extends AppCompatActivity
                     onBackPressed();
             }
         });
-        /*
+
+        if (savedInstanceState == null) {
+
+            /*
             app should start on the home section
             notice we won't be adding it to the back stack. Pressing back
             should exist the app
+            */
+            navigateToSection(AppSection.INBOX, false);
+            navigationView.setCheckedItem(R.id.nav_inbox);
+        } else {
+            /*
+            the app has been recreated, we can obtain the saved state and restore the looks of the toolbar
+             */
+            AppBarState savedAppBarState = (AppBarState) savedInstanceState.getSerializable(INSTANCE_TOOLBAR_USE_DRAWER);
+            if (savedAppBarState == AppBarState.USE_DRAWER)
+                showRootNavigation();
+            else
+                showBackArrowNavigation();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        /*
+        the app will be recreated and the current toolbar will be null. It will be recreated
+        when the onCreate method is called. Store the current state to rebuild the toolbar correctly
          */
-        navigateToSection(AppSection.INBOX, false);
-        navigationView.setCheckedItem(R.id.nav_inbox);
+        AppBarState currentApbAppBarState = AppBarState.USE_DRAWER;
+        MyAppFragment currentFragment = getCurrentFragment();
+        if (currentFragment != null) {
+            currentApbAppBarState = currentFragment.getIsRootSection() ? AppBarState.USE_DRAWER : AppBarState.USE_BACK_NAVIGATION;
+        }
+        // store this value on the state
+        outState.putSerializable(INSTANCE_TOOLBAR_USE_DRAWER, currentApbAppBarState);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -169,16 +200,18 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
     /**
      * Updates the sidebar according to a specific fragment
+     *
      * @param fragment fragment being shown
      */
-    private void setNavigationViewCheckedItem(MyAppFragment fragment){
-        if(fragment.getFragmentTag().equals(AppSection.INBOX.toString()))
+    private void setNavigationViewCheckedItem(MyAppFragment fragment) {
+        if (fragment.getFragmentTag().equals(AppSection.INBOX.toString()))
             navigationView.setCheckedItem(R.id.nav_inbox);
-        else if(fragment.getFragmentTag().equals(AppSection.SENT.toString()))
+        else if (fragment.getFragmentTag().equals(AppSection.SENT.toString()))
             navigationView.setCheckedItem(R.id.nav_sent);
-        else if(fragment.getFragmentTag().equals(AppSection.TRASH.toString()))
+        else if (fragment.getFragmentTag().equals(AppSection.TRASH.toString()))
             navigationView.setCheckedItem(R.id.nav_trash);
     }
 
@@ -220,6 +253,14 @@ public class MainActivity extends AppCompatActivity
         toggle.setDrawerIndicatorEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+    //endregion
+
+    //region support
+
+    private enum AppBarState {
+        USE_DRAWER,
+        USE_BACK_NAVIGATION,
     }
     //endregion
 }

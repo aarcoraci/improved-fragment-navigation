@@ -13,4 +13,13 @@
         android:id="@+id/textView2"
         android:textSize="20sp"
         android:textStyle="normal|bold" />
+
+    <Button
+        android:text="Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="17dp"
+        android:id="@+id/inbox_button" />
 </RelativeLayout>
